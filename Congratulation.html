@@ -1,197 +1,383 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>4Site Cabinetry - Automatic Door Opening</title>
+<meta charset="UTF-8">
+<title>4Site | Project Celebration</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
+  :root {
+    --gold-primary: #f3c28b;
+    --gold-secondary: #d9a84b;
+    --bronze-dark: #8a5a00;
+    --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  
   html, body {
-    margin:0; padding:0; height:100%;
-    overflow:hidden;
-    background:#f4f4f4;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
     font-family: 'Montserrat', sans-serif;
   }
+
   #doorContainer {
     position: fixed;
-    top:0; left:0; width:100%; height:100%;
-    perspective: 1200px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    perspective: 1800px;
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 10000;
-    background: #000;
+    background: radial-gradient(ellipse at center, #1a1a1a 0%, #000 100%);
   }
+
   .door {
     width: 50vw;
     height: 100vh;
     background-image: url('Door.jpg');
     background-size: 200% 100%;
     background-repeat: no-repeat;
-    transition: transform 1.8s ease-in-out;
+    transition: transform 2.2s var(--ease-out-quint);
+    filter: drop-shadow(0 0 30px rgba(0,0,0,0.7));
   }
+
   .door.left {
     background-position: left center;
     transform-origin: left center;
-    box-shadow: inset -2px 0 10px rgba(0,0,0,0.6);
+    box-shadow: inset -25px 0 40px rgba(0,0,0,0.9);
   }
+
   .door.right {
     background-position: right center;
     transform-origin: right center;
-    box-shadow: inset 2px 0 10px rgba(0,0,0,0.6);
+    box-shadow: inset 25px 0 40px rgba(0,0,0,0.9);
   }
+
   #doorContainer.open .door.left {
-    transform: rotateY(-100deg);
+    transform: rotateY(-105deg) translateZ(-50px);
   }
+
   #doorContainer.open .door.right {
-    transform: rotateY(100deg);
+    transform: rotateY(105deg) translateZ(-50px);
   }
+
   #doorLogo {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: #f3c28b;
-    font-weight: 900;
+    color: var(--gold-primary);
     text-align: center;
-    pointer-events: none;
     z-index: 10;
+    opacity: 0;
+    animation: fadeIn 1.5s var(--ease-out-quint) 0.5s forwards;
   }
+
+  @keyframes fadeIn {
+    to { opacity: 1; }
+  }
+
   #doorLogo h1 {
     font-size: 7vw;
     margin: 0;
-    letter-spacing: 0.2em;
-    text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
-  }
-  #doorLogo p {
-    font-size: 2vw;
-    margin: 0;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.3em;
+    text-shadow: 0 0 30px rgba(243,194,139,0.4);
+    font-weight: 900;
     text-transform: uppercase;
-    font-weight: 600;
-    color: #d9a84b;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
   }
+
+  #doorLogo p {
+    font-size: 1.8vw;
+    margin: 1.5em 0 0;
+    letter-spacing: 0.25em;
+    font-weight: 300;
+    color: var(--gold-secondary);
+  }
+
   #celebrate {
     display: none;
-    height: 100vh;
-    color: orange;
-    text-align: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: #fff7e6;
-    padding: 0 10vw;
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+    z-index: 9000;
   }
+
   #celebrate h1 {
-    font-size: 6vw;
+    font-size: 5vw;
     margin: 0;
-    text-shadow: 1px 1px 3px #a35400;
+    background: linear-gradient(to right, var(--gold-primary), var(--gold-secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 40px rgba(217,168,75,0.3);
+    animation: textGlow 3s infinite alternate;
   }
+
+  @keyframes textGlow {
+    from { text-shadow: 0 0 15px rgba(217,168,75,0.3); }
+    to { text-shadow: 0 0 40px rgba(217,168,75,0.7); }
+  }
+
   #celebrate p {
-    font-size: 2vw;
-    margin-top: 20px;
-    color: #8a5a00;
+    font-size: 1.5vw;
+    margin-top: 3em;
+    color: var(--gold-primary);
+    letter-spacing: 0.15em;
+    font-weight: 300;
   }
-  canvas.confetti {
+
+  .particles-js {
     position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 8000;
     pointer-events: none;
-    top: 0; left: 0; width: 100%; height: 100%;
-    z-index: 9999;
   }
-  #audioError {
-    display: none;
+
+  .preloader {
     position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0,0,0,0.7);
-    color: white;
-    padding: 10px 20px;
-    border-radius: 5px;
-    z-index: 100000;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 20000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 1;
+    transition: opacity 1s var(--ease-out-quint);
+  }
+
+  .preloader-inner {
+    position: relative;
+    width: 80px;
+    height: 80px;
+  }
+
+  .preloader-spinner {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 3px solid transparent;
+    border-top-color: var(--gold-primary);
+    border-radius: 50%;
+    animation: spin 1.5s linear infinite;
+  }
+
+  .preloader-spinner:nth-child(2) {
+    border-top-color: var(--gold-secondary);
+    animation-delay: 0.3s;
+    width: 70%;
+    height: 70%;
+    top: 15%;
+    left: 15%;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .gold-dust {
+    position: absolute;
+    background: radial-gradient(circle, var(--gold-primary) 0%, transparent 70%);
+    border-radius: 50%;
+    opacity: 0;
+    animation: dustFade 4s infinite;
+  }
+
+  @keyframes dustFade {
+    0%, 100% { opacity: 0; transform: scale(0.5); }
+    50% { opacity: 0.6; transform: scale(1); }
   }
 </style>
 </head>
 <body>
+
+<div class="preloader">
+  <div class="preloader-inner">
+    <div class="preloader-spinner"></div>
+    <div class="preloader-spinner"></div>
+  </div>
+</div>
 
 <div id="doorContainer">
   <div class="door left"></div>
   <div class="door right"></div>
   <div id="doorLogo">
     <h1>4Site</h1>
-    <p>The Best Cabinetry</p>
+    <p>Exceptional Cabinetry</p>
   </div>
 </div>
 
 <div id="celebrate">
-  <h1>Congrats! We win a new project today! 🎉</h1>
-  <p>Celebrating with sound and animation</p>
+  <h1>Project Successfully Awarded</h1>
+  <p>Celebrating our achievement</p>
+  <div id="particles-js" class="particles-js"></div>
 </div>
 
 <audio id="gongAudio" preload="auto">
-  <source src="Gong.mp3" type="audio/mpeg" />
-  Your browser does not support the audio element.
+  <source src="Gong.mp3" type="audio/mpeg">
 </audio>
 
-<div id="audioError">Audio failed to load. Click here to try again.</div>
-
-<canvas class="confetti"></canvas>
-
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
 <script>
-  const doorContainer = document.getElementById('doorContainer');
-  const celebrate = document.getElementById('celebrate');
-  const audio = document.getElementById('gongAudio');
-  const audioError = document.getElementById('audioError');
-
-  // 自动触发开门动画（1秒后）
-  setTimeout(() => {
-    startAnimation();
-  }, 1000);
-
-  function startAnimation() {
-    doorContainer.classList.add('open');
+document.addEventListener('DOMContentLoaded', () => {
+    const preloader = document.querySelector('.preloader');
+    const doorContainer = document.getElementById('doorContainer');
+    const celebrate = document.getElementById('celebrate');
+    const audio = document.getElementById('gongAudio');
     
-    setTimeout(() => {
-      doorContainer.style.display = 'none';
-      celebrate.style.display = 'flex';
-      
-      // 尝试播放音频
-      playAudio();
-      
-      // 启动彩花效果
-      launchConfetti();
-    }, 1800);
-  }
-
-  function playAudio() {
-    audio.play()
-      .catch(error => {
-        console.error("Audio playback failed:", error);
-        audioError.style.display = 'block';
-        audioError.addEventListener('click', () => {
-          audio.play().catch(e => console.error("Retry failed:", e));
-          audioError.style.display = 'none';
+    // Initialize particles.js
+    if (typeof particlesJS !== 'undefined') {
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: "#f3c28b" },
+                shape: { type: "circle" },
+                opacity: { value: 0.5, random: true },
+                size: { value: 3, random: true },
+                line_linked: { enable: true, distance: 150, color: "#d9a84b", opacity: 0.4, width: 1 },
+                move: { enable: true, speed: 2, direction: "none", random: true, straight: false, out_mode: "out" }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: {
+                    onhover: { enable: true, mode: "repulse" },
+                    onclick: { enable: true, mode: "push" },
+                    resize: true
+                }
+            }
         });
-      });
-  }
-
-  function launchConfetti() {
-    const duration = 5 * 1000;
-    const animationEnd = Date.now() + duration;
-    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
-
-    function frame() {
-      confetti({
-        particleCount: 5,
-        ...defaults,
-        origin: { x: Math.random(), y: Math.random() - 0.2 }
-      });
-      if (Date.now() < animationEnd) {
-        requestAnimationFrame(frame);
-      }
     }
-    frame();
-  }
+
+    // Create gold dust particles
+    function createGoldDust() {
+        for (let i = 0; i < 25; i++) {
+            const dust = document.createElement('div');
+            dust.className = 'gold-dust';
+            const size = Math.random() * 120 + 60;
+            dust.style.width = `${size}px`;
+            dust.style.height = `${size}px`;
+            dust.style.left = `${Math.random() * 100}vw`;
+            dust.style.top = `${Math.random() * 100}vh`;
+            dust.style.animationDelay = `${Math.random() * 3}s`;
+            document.body.appendChild(dust);
+        }
+    }
+
+    // Enhanced audio playback with fallbacks
+    function playCelebrationSound() {
+        const playPromise = audio.play();
+        
+        playPromise.catch(error => {
+            console.log('Autoplay blocked, attempting workaround...');
+            
+            // Create invisible interaction element
+            const interactor = document.createElement('div');
+            interactor.style.position = 'fixed';
+            interactor.style.top = '0';
+            interactor.style.left = '0';
+            interactor.style.width = '100%';
+            interactor.style.height = '100%';
+            interactor.style.zIndex = '99999';
+            interactor.style.opacity = '0';
+            document.body.appendChild(interactor);
+            
+            // Programmatically click it
+            setTimeout(() => {
+                interactor.click();
+                
+                // Try playing again after interaction
+                audio.play()
+                    .then(() => interactor.remove())
+                    .catch(e => {
+                        console.error('Final fallback failed:', e);
+                        interactor.remove();
+                    });
+            }, 50);
+        });
+    }
+
+    // Start the experience
+    setTimeout(() => {
+        // Hide preloader
+        preloader.style.opacity = '0';
+        setTimeout(() => {
+            preloader.style.display = 'none';
+            
+            // Begin door animation
+            doorContainer.classList.add('open');
+            
+            setTimeout(() => {
+                // Transition to celebration
+                doorContainer.style.display = 'none';
+                celebrate.style.display = 'flex';
+                
+                // Play audio
+                playCelebrationSound();
+                
+                // Create effects
+                createGoldDust();
+                launchConfetti();
+            }, 2200);
+        }, 1000);
+    }, 1500);
+
+    // Premium confetti effect
+    function launchConfetti() {
+        const duration = 8 * 1000;
+        const animationEnd = Date.now() + duration;
+        const defaults = { 
+            startVelocity: 25, 
+            spread: 360, 
+            ticks: 100, 
+            zIndex: 9999,
+            colors: ['#f3c28b', '#d9a84b', '#ffffff']
+        };
+
+        function frame() {
+            confetti({
+                ...defaults,
+                particleCount: 10,
+                origin: { 
+                    x: Math.random(),
+                    y: Math.random() - 0.2
+                }
+            });
+            
+            confetti({
+                ...defaults,
+                particleCount: 5,
+                origin: { 
+                    x: Math.random(),
+                    y: Math.random() - 0.2
+                },
+                shapes: ['circle', 'square']
+            });
+
+            if (Date.now() < animationEnd) {
+                requestAnimationFrame(frame);
+            }
+        }
+        
+        frame();
+    }
+});
 </script>
 </body>
 </html>
