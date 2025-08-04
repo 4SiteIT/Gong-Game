@@ -1,224 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>4Site | New Project Celebration</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-  /* Premium styling for celebration experience */
-  :root {
-    --gold-accent: #f3c28b;
-    --gold-dark: #d9a84b;
-    --animation-curve: cubic-bezier(0.17, 0.67, 0.21, 0.99);
-  }
-  
-  body {
-    margin: 0;
-    padding: 0;
-    height: 100vh;
-    overflow: hidden;
-    background: #000;
-    font-family: 'Montserrat', sans-serif;
-  }
-
-  #celebration-container {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: radial-gradient(ellipse at center, #1a1a1a 0%, #000 100%);
-    z-index: 1000;
-  }
-
-  .headline {
-    font-size: 5vw;
-    margin: 0;
-    background: linear-gradient(to right, var(--gold-accent), var(--gold-dark));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    text-shadow: 0 0 30px rgba(217,168,75,0.3);
-    animation: textPulse 3s infinite alternate;
-  }
-
-  @keyframes textPulse {
-    from { opacity: 0.9; transform: scale(0.98); }
-    to { opacity: 1; transform: scale(1.02); }
-  }
-
-  .subhead {
-    font-size: 1.8vw;
-    margin-top: 2em;
-    color: var(--gold-accent);
-    letter-spacing: 0.2em;
-    font-weight: 300;
-  }
-
-  .particles {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-  }
-
-  .preloader {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: #000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-  }
-
-  .loader-spinner {
-    width: 60px;
-    height: 60px;
-    border: 3px solid transparent;
-    border-top-color: var(--gold-accent);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
-
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-</style>
+    <meta charset="UTF-8">
+    <title>4Site Project Celebration</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+        }
+        #container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+        #status {
+            position: fixed;
+            bottom: 20px;
+            color: #ff0;
+            font-size: 12px;
+        }
+    </style>
 </head>
 <body>
+    <div id="container">
+        <h1>Loading Celebration...</h1>
+        <div id="status">Initializing...</div>
+    </div>
 
-<div class="preloader">
-  <div class="loader-spinner"></div>
-</div>
+    <audio id="celebrationAudio" preload="auto">
+        <!-- Fallback sources -->
+        <source src="Gong.mp3" type="audio/mpeg">
+        <source src="Gong.ogg" type="audio/ogg">
+    </audio>
 
-<div id="celebration-container">
-  <h1 class="headline">NEW PROJECT AWARDED</h1>
-  <p class="subhead">Celebrating our team's achievement</p>
-  <canvas class="particles"></canvas>
-</div>
+    <script>
+        // Debugging status updates
+        function updateStatus(message) {
+            document.getElementById('status').textContent = message;
+            console.log(message);
+        }
 
-<script>
-// Audio context for guaranteed playback
-let audioContext;
-let audioBuffer;
+        updateStatus('Starting initialization...');
 
-// Preload assets and initialize
-window.addEventListener('DOMContentLoaded', () => {
-  // Initialize Web Audio API
-  try {
-    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  } catch(e) {
-    console.error("Web Audio API not supported");
-  }
+        // Main initialization function
+        function initializeExperience() {
+            updateStatus('Creating audio context...');
+            
+            try {
+                // Try Web Audio API first
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                const audioContext = new AudioContext();
+                const audioElement = document.getElementById('celebrationAudio');
+                
+                updateStatus('Attempting automatic playback...');
+                
+                // Programmatic play attempt with error handling
+                audioElement.play().then(() => {
+                    updateStatus('Audio playback started successfully!');
+                    showCelebration();
+                }).catch(error => {
+                    updateStatus(`Auto-play blocked: ${error}. Trying fallback...`);
+                    attemptFallbackPlayback();
+                });
 
-  // Preload audio file
-  fetch('Gong.mp3')
-    .then(response => response.arrayBuffer())
-    .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
-    .then(buffer => {
-      audioBuffer = buffer;
-      startCelebration();
-    })
-    .catch(e => {
-      console.error("Audio loading failed:", e);
-      startCelebration(); // Start without audio if needed
-    });
-});
+            } catch (error) {
+                updateStatus(`Error: ${error}. Loading fallback...`);
+                attemptFallbackPlayback();
+            }
+        }
 
-function startCelebration() {
-  // Hide preloader
-  document.querySelector('.preloader').style.opacity = '0';
-  setTimeout(() => {
-    document.querySelector('.preloader').remove();
+        // Fallback playback method
+        function attemptFallbackPlayback() {
+            updateStatus('Using silent video workaround...');
+            
+            try {
+                // Create silent video element to unlock audio
+                const video = document.createElement('video');
+                video.muted = true;
+                video.src = 'Gong.mp3';
+                video.play().then(() => {
+                    updateStatus('Video workaround successful!');
+                    showCelebration();
+                    
+                    // Now try playing actual audio
+                    setTimeout(() => {
+                        document.getElementById('celebrationAudio').play()
+                            .then(() => updateStatus('Audio playback started after unlock'))
+                            .catch(e => updateStatus(`Final fallback failed: ${e}`));
+                    }, 300);
+                });
+            } catch (error) {
+                updateStatus(`Video fallback failed: ${error}`);
+                showCelebration(); // Show without audio
+            }
+        }
 
-    // Play celebration audio
-    playCelebrationSound();
+        // Display celebration content
+        function showCelebration() {
+            updateStatus('Displaying celebration...');
+            document.getElementById('container').innerHTML = `
+                <h1 style="font-size: 3em; color: gold;">NEW PROJECT WON!</h1>
+                <p style="font-size: 1.5em;">Congratulations Team!</p>
+                <div style="margin-top: 30px; font-size: 1.2em;">
+                    We've secured another amazing project!
+                </div>
+            `;
+        }
 
-    // Initialize particle effects
-    initParticles();
-
-    // Additional animations can be added here
-  }, 500);
-}
-
-function playCelebrationSound() {
-  if (!audioBuffer || !audioContext) return;
-
-  // Create audio source
-  const source = audioContext.createBufferSource();
-  source.buffer = audioBuffer;
-
-  // Create gain node for volume control
-  const gainNode = audioContext.createGain();
-  gainNode.gain.value = 0; // Start muted
-  
-  // Connect nodes
-  source.connect(gainNode);
-  gainNode.connect(audioContext.destination);
-
-  // Start playback with fade-in
-  source.start(0);
-  gainNode.gain.linearRampToValueAtTime(0.8, audioContext.currentTime + 0.5);
-
-  // Schedule automatic stop after playback completes
-  source.stop(audioContext.currentTime + audioBuffer.duration);
-}
-
-function initParticles() {
-  const canvas = document.querySelector('.particles');
-  const ctx = canvas.getContext('2d');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-
-  // Create particles
-  const particles = Array.from({ length: 150 }, () => ({
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height,
-    size: Math.random() * 3 + 1,
-    speedX: Math.random() * 2 - 1,
-    speedY: Math.random() * 2 - 1,
-    color: `rgba(243, 194, 139, ${Math.random() * 0.5 + 0.1})`
-  }));
-
-  // Animation loop
-  function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    particles.forEach(p => {
-      p.x += p.speedX;
-      p.y += p.speedY;
-      
-      // Boundary check
-      if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
-      if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
-      
-      // Draw particle
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-      ctx.fillStyle = p.color;
-      ctx.fill();
-    });
-    
-    requestAnimationFrame(animate);
-  }
-
-  animate();
-}
-
-// Handle window resize
-window.addEventListener('resize', () => {
-  const canvas = document.querySelector('.particles');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-});
-</script>
+        // Start everything after short delay
+        setTimeout(() => {
+            initializeExperience();
+        }, 500);
+    </script>
 </body>
 </html>
