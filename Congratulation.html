@@ -1,127 +1,197 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>4Site Project Celebration</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background: #000;
-            font-family: 'Arial', sans-serif;
-            overflow: hidden;
-            height: 100vh;
-        }
-        #container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: white;
-        }
-        #status {
-            position: fixed;
-            bottom: 20px;
-            color: #ff0;
-            font-size: 12px;
-        }
-    </style>
+<meta charset="UTF-8" />
+<title>4Site Cabinetry - Automatic Door Opening</title>
+<style>
+  html, body {
+    margin:0; padding:0; height:100%;
+    overflow:hidden;
+    background:#f4f4f4;
+    font-family: 'Montserrat', sans-serif;
+  }
+  #doorContainer {
+    position: fixed;
+    top:0; left:0; width:100%; height:100%;
+    perspective: 1200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    background: #000;
+  }
+  .door {
+    width: 50vw;
+    height: 100vh;
+    background-image: url('Door.jpg');
+    background-size: 200% 100%;
+    background-repeat: no-repeat;
+    transition: transform 1.8s ease-in-out;
+  }
+  .door.left {
+    background-position: left center;
+    transform-origin: left center;
+    box-shadow: inset -2px 0 10px rgba(0,0,0,0.6);
+  }
+  .door.right {
+    background-position: right center;
+    transform-origin: right center;
+    box-shadow: inset 2px 0 10px rgba(0,0,0,0.6);
+  }
+  #doorContainer.open .door.left {
+    transform: rotateY(-100deg);
+  }
+  #doorContainer.open .door.right {
+    transform: rotateY(100deg);
+  }
+  #doorLogo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #f3c28b;
+    font-weight: 900;
+    text-align: center;
+    pointer-events: none;
+    z-index: 10;
+  }
+  #doorLogo h1 {
+    font-size: 7vw;
+    margin: 0;
+    letter-spacing: 0.2em;
+    text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
+  }
+  #doorLogo p {
+    font-size: 2vw;
+    margin: 0;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: #d9a84b;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+  }
+  #celebrate {
+    display: none;
+    height: 100vh;
+    color: orange;
+    text-align: center;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #fff7e6;
+    padding: 0 10vw;
+  }
+  #celebrate h1 {
+    font-size: 6vw;
+    margin: 0;
+    text-shadow: 1px 1px 3px #a35400;
+  }
+  #celebrate p {
+    font-size: 2vw;
+    margin-top: 20px;
+    color: #8a5a00;
+  }
+  canvas.confetti {
+    position: fixed;
+    pointer-events: none;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 9999;
+  }
+  #audioError {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.7);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    z-index: 100000;
+  }
+</style>
 </head>
 <body>
-    <div id="container">
-        <h1>Loading Celebration...</h1>
-        <div id="status">Initializing...</div>
-    </div>
 
-    <audio id="celebrationAudio" preload="auto">
-        <!-- Fallback sources -->
-        <source src="Gong.mp3" type="audio/mpeg">
-        <source src="Gong.ogg" type="audio/ogg">
-    </audio>
+<div id="doorContainer">
+  <div class="door left"></div>
+  <div class="door right"></div>
+  <div id="doorLogo">
+    <h1>4Site</h1>
+    <p>The Best Cabinetry</p>
+  </div>
+</div>
 
-    <script>
-        // Debugging status updates
-        function updateStatus(message) {
-            document.getElementById('status').textContent = message;
-            console.log(message);
-        }
+<div id="celebrate">
+  <h1>Congrats! We win a new project today! 🎉</h1>
+  <p>Celebrating with sound and animation</p>
+</div>
 
-        updateStatus('Starting initialization...');
+<audio id="gongAudio" preload="auto">
+  <source src="Gong.mp3" type="audio/mpeg" />
+  Your browser does not support the audio element.
+</audio>
 
-        // Main initialization function
-        function initializeExperience() {
-            updateStatus('Creating audio context...');
-            
-            try {
-                // Try Web Audio API first
-                const AudioContext = window.AudioContext || window.webkitAudioContext;
-                const audioContext = new AudioContext();
-                const audioElement = document.getElementById('celebrationAudio');
-                
-                updateStatus('Attempting automatic playback...');
-                
-                // Programmatic play attempt with error handling
-                audioElement.play().then(() => {
-                    updateStatus('Audio playback started successfully!');
-                    showCelebration();
-                }).catch(error => {
-                    updateStatus(`Auto-play blocked: ${error}. Trying fallback...`);
-                    attemptFallbackPlayback();
-                });
+<div id="audioError">Audio failed to load. Click here to try again.</div>
 
-            } catch (error) {
-                updateStatus(`Error: ${error}. Loading fallback...`);
-                attemptFallbackPlayback();
-            }
-        }
+<canvas class="confetti"></canvas>
 
-        // Fallback playback method
-        function attemptFallbackPlayback() {
-            updateStatus('Using silent video workaround...');
-            
-            try {
-                // Create silent video element to unlock audio
-                const video = document.createElement('video');
-                video.muted = true;
-                video.src = 'Gong.mp3';
-                video.play().then(() => {
-                    updateStatus('Video workaround successful!');
-                    showCelebration();
-                    
-                    // Now try playing actual audio
-                    setTimeout(() => {
-                        document.getElementById('celebrationAudio').play()
-                            .then(() => updateStatus('Audio playback started after unlock'))
-                            .catch(e => updateStatus(`Final fallback failed: ${e}`));
-                    }, 300);
-                });
-            } catch (error) {
-                updateStatus(`Video fallback failed: ${error}`);
-                showCelebration(); // Show without audio
-            }
-        }
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+<script>
+  const doorContainer = document.getElementById('doorContainer');
+  const celebrate = document.getElementById('celebrate');
+  const audio = document.getElementById('gongAudio');
+  const audioError = document.getElementById('audioError');
 
-        // Display celebration content
-        function showCelebration() {
-            updateStatus('Displaying celebration...');
-            document.getElementById('container').innerHTML = `
-                <h1 style="font-size: 3em; color: gold;">NEW PROJECT WON!</h1>
-                <p style="font-size: 1.5em;">Congratulations Team!</p>
-                <div style="margin-top: 30px; font-size: 1.2em;">
-                    We've secured another amazing project!
-                </div>
-            `;
-        }
+  // 自动触发开门动画（1秒后）
+  setTimeout(() => {
+    startAnimation();
+  }, 1000);
 
-        // Start everything after short delay
-        setTimeout(() => {
-            initializeExperience();
-        }, 500);
-    </script>
+  function startAnimation() {
+    doorContainer.classList.add('open');
+    
+    setTimeout(() => {
+      doorContainer.style.display = 'none';
+      celebrate.style.display = 'flex';
+      
+      // 尝试播放音频
+      playAudio();
+      
+      // 启动彩花效果
+      launchConfetti();
+    }, 1800);
+  }
+
+  function playAudio() {
+    audio.play()
+      .catch(error => {
+        console.error("Audio playback failed:", error);
+        audioError.style.display = 'block';
+        audioError.addEventListener('click', () => {
+          audio.play().catch(e => console.error("Retry failed:", e));
+          audioError.style.display = 'none';
+        });
+      });
+  }
+
+  function launchConfetti() {
+    const duration = 5 * 1000;
+    const animationEnd = Date.now() + duration;
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
+
+    function frame() {
+      confetti({
+        particleCount: 5,
+        ...defaults,
+        origin: { x: Math.random(), y: Math.random() - 0.2 }
+      });
+      if (Date.now() < animationEnd) {
+        requestAnimationFrame(frame);
+      }
+    }
+    frame();
+  }
+</script>
 </body>
 </html>
