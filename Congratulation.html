@@ -5,252 +5,175 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>4Site | Project Celebration</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;700;900&display=swap');
   :root {
     --gold-primary: #f3c28b;
     --gold-secondary: #d9a84b;
     --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
   }
+
   * {
     box-sizing: border-box;
   }
+
   body, html {
     margin: 0; padding: 0;
     height: 100%;
-    width: 100%;
     background: #000;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     color: var(--gold-primary);
   }
+
   #doorContainer {
-    position: fixed;
-    inset: 0;
+    position: relative;
+    width: 100vw;
+    height: 100vh;
     perspective: 1800px;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     background: radial-gradient(ellipse at center, #1a1a1a 0%, #000 100%);
-    z-index: 10000;
-    overflow: visible;
+    flex-direction: column;
+  }
+
+  #doors {
+    width: 60vw;
+    max-width: 600px;
+    height: 80vh;
+    display: flex;
+    cursor: pointer;
     user-select: none;
   }
-  .doorWrapper {
-    width: 100%;
-    flex: 1 1 auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+
   .door {
-    width: 50vw;
-    height: 100vh;
-    max-height: 100vh;
+    flex: 1;
     background-image: url('Door.jpg');
     background-size: 200% 100%;
     background-repeat: no-repeat;
     transition: transform 2.2s var(--ease-out-quint);
     filter: drop-shadow(0 0 30px rgba(0,0,0,0.7));
-    will-change: transform;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.9);
   }
+
   .door.left {
     background-position: left center;
     transform-origin: left center;
-    box-shadow: inset -25px 0 40px rgba(0,0,0,0.9);
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
   }
+
   .door.right {
     background-position: right center;
     transform-origin: right center;
-    box-shadow: inset 25px 0 40px rgba(0,0,0,0.9);
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
   }
+
   #doorContainer.open .door.left {
     transform: rotateY(-105deg) translateZ(-50px);
   }
+
   #doorContainer.open .door.right {
     transform: rotateY(105deg) translateZ(-50px);
   }
-  #doorLogo {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: var(--gold-primary);
-    text-align: center;
-    z-index: 10;
-    pointer-events: none;
-  }
-  #doorLogo h1 {
-    font-size: 10vw;
-    margin: 0;
-    letter-spacing: 0.3em;
-    text-shadow: 0 0 30px rgba(243,194,139,0.4);
-    font-weight: 900;
-    text-transform: uppercase;
-  }
-  #doorLogo p {
-    font-size: 2vw;
-    margin: 1.5em 0 0;
-    letter-spacing: 0.25em;
-    font-weight: 300;
-    color: var(--gold-secondary);
-  }
-  #welcomeMessage {
-    padding: 0.5rem 0;
-    font-weight: 600;
-    font-size: clamp(1rem, 2vw, 1.5rem);
-    color: var(--gold-secondary);
-    text-shadow: 0 0 12px rgba(217, 168, 75, 0.8);
-    cursor: pointer;
+
+  #doorText {
+    margin-top: 1.5rem;
+    font-size: 1.6rem;
+    letter-spacing: 0.1em;
     user-select: none;
-    letter-spacing: 0.05em;
     text-align: center;
-    width: 100%;
-    position: fixed;
-    bottom: 2.5vh;
-    left: 50%;
-    transform: translateX(-50%);
-    max-width: 90vw;
-    z-index: 10100;
   }
+
   #celebrate {
+    display: none;
     position: fixed;
-    inset: 0;
-    display: flex;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+    z-index: 9000;
     color: var(--gold-primary);
-    z-index: 5;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 1s ease;
-    user-select: none;
-    padding: 0 2rem;
-    text-align: center;
-    line-height: 1.3;
-    overflow: hidden;
   }
-  #celebrate.active {
-    opacity: 1;
-    pointer-events: all;
-  }
-  #particles {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 4;
-  }
+
   #celebrate h1 {
-    font-size: clamp(4rem, 7vw, 6rem);
-    margin: 0 0 1.2rem 0;
-    font-weight: 900;
-    letter-spacing: 0.25em;
+    font-size: 5vw;
+    margin: 0;
     background: linear-gradient(to right, var(--gold-primary), var(--gold-secondary));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    filter: drop-shadow(0 0 30px var(--gold-secondary));
-    animation: glowPulse 3s ease-in-out infinite alternate, bounceScale 3s ease-in-out infinite;
+    text-shadow: 0 0 40px rgba(217,168,75,0.3);
+    animation: textGlow 3s infinite alternate;
   }
-  @keyframes glowPulse {
-    0% { filter: drop-shadow(0 0 18px var(--gold-secondary)); }
-    100% { filter: drop-shadow(0 0 50px var(--gold-primary)); }
+
+  @keyframes textGlow {
+    from { text-shadow: 0 0 15px rgba(217,168,75,0.3); }
+    to { text-shadow: 0 0 40px rgba(217,168,75,0.7); }
   }
-  @keyframes bounceScale {
-    0%, 100% { transform: scale(1);}
-    50% { transform: scale(1.05);}
-  }
+
   #celebrate p {
-    margin: 0;
-    font-weight: 400;
-    font-size: clamp(1.5rem, 2.5vw, 2rem);
+    font-size: 1.5vw;
+    margin-top: 2em;
     letter-spacing: 0.15em;
-    max-width: 600px;
-    text-shadow:
-      0 0 10px var(--gold-secondary);
+    font-weight: 300;
+    color: var(--gold-primary);
   }
+
   canvas.confetti {
     position: fixed;
     pointer-events: none;
     top: 0; left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 9999;
+    width: 100vw;
+    height: 100vh;
+    z-index: 8000;
   }
 </style>
 </head>
 <body>
-  <div id="doorContainer" role="main" aria-label="Opening door animation">
-    <div class="doorWrapper">
-      <div class="door left"></div>
-      <div class="door right"></div>
-    </div>
-    <div id="doorLogo" aria-label="4Site logo and tagline">
-      <h1>4Site</h1>
-      <p>Exceptional Cabinetry</p>
-    </div>
-    <div id="welcomeMessage" tabindex="0" role="button" aria-pressed="false" aria-label="Push the door and explore 4Site together">
-      Push the door and explore 4Site together
-    </div>
-  </div>
 
-  <div id="celebrate" role="region" aria-live="polite" aria-atomic="true">
-    <div id="particles"></div>
-    <h1 id="celebrateTitle">Project Successfully Awarded</h1>
-    <p>Celebrating our achievement</p>
-    <canvas class="confetti"></canvas>
+<div id="doorContainer">
+  <div id="doors" role="button" tabindex="0" aria-label="Push the door and explore 4Site together">
+    <div class="door left"></div>
+    <div class="door right"></div>
   </div>
+  <div id="doorText">Push the door and explore 4Site together</div>
+</div>
+
+<div id="celebrate" aria-live="polite" aria-atomic="true">
+  <h1>Project Successfully Awarded</h1>
+  <p>Celebrating our achievement</p>
+  <canvas class="confetti"></canvas>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 <script>
-(() => {
-  const doorContainer = document.getElementById('doorContainer');
-  const celebrate = document.getElementById('celebrate');
-  const welcomeMessage = document.getElementById('welcomeMessage');
+  let audioContext;
+  let audioBuffer;
 
-  welcomeMessage.style.cursor = 'pointer';
-  welcomeMessage.addEventListener('click', startExperience);
-  doorContainer.addEventListener('click', e => {
-    if(e.target === doorContainer) startExperience();
-  });
-
-  let audioContext, audioBuffer;
-  let animationStarted = false;
-
-  async function startExperience() {
-    if(animationStarted) return;
-    animationStarted = true;
-    await initAudio();
-
-    welcomeMessage.style.transition = 'opacity 0.3s ease';
-    welcomeMessage.style.opacity = '0';
-
-    doorContainer.classList.add('open');
-    playAudio();
-
-    setTimeout(() => {
-      doorContainer.style.transition = 'opacity 0.8s ease';
-      doorContainer.style.opacity = '0';
-      celebrate.classList.add('active');
-      launchConfetti();
-      startParticles();
-    }, 2200);
-  }
-
-  async function initAudio() {
-    try {
-      const response = await fetch('Gong.mp3');
-      const arrayBuffer = await response.arrayBuffer();
+  fetch('Gong.mp3')
+    .then(r => r.arrayBuffer())
+    .then(arrayBuffer => {
       audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-    } catch (e) {}
-  }
+      return audioContext.decodeAudioData(arrayBuffer);
+    })
+    .then(buffer => {
+      audioBuffer = buffer;
+    })
+    .catch(() => {
+      audioBuffer = null;
+    });
 
-  function playAudio() {
+  const doorContainer = document.getElementById('doorContainer');
+  const doors = document.getElementById('doors');
+  const celebrate = document.getElementById('celebrate');
+
+  function playCelebrationSound() {
     if (!audioBuffer || !audioContext) return;
     const source = audioContext.createBufferSource();
     source.buffer = audioBuffer;
@@ -264,27 +187,27 @@
   }
 
   function launchConfetti() {
-    const duration = 8000;
+    const duration = 8 * 1000;
     const animationEnd = Date.now() + duration;
-    const defaults = {
-      startVelocity: 25,
-      spread: 360,
-      ticks: 80,
-      zIndex: 9999,
-      colors: ['#f3c28b', '#d9a84b', '#ffffff'],
-      shapes: ['square', 'circle'],
+    const defaults = { 
+      startVelocity: 25, 
+      spread: 360, 
+      ticks: 100, 
+      zIndex: 8000,
+      colors: ['#f3c28b', '#d9a84b', '#ffffff']
     };
+
     function frame() {
       confetti({
         ...defaults,
         particleCount: 10,
-        origin: { x: Math.random(), y: Math.random() - 0.2 },
+        origin: { x: Math.random(), y: Math.random() - 0.2 }
       });
       confetti({
         ...defaults,
         particleCount: 5,
         origin: { x: Math.random(), y: Math.random() - 0.2 },
-        shapes: ['circle'],
+        shapes: ['circle', 'square']
       });
       if (Date.now() < animationEnd) {
         requestAnimationFrame(frame);
@@ -293,57 +216,25 @@
     frame();
   }
 
-  function startParticles() {
-    const particles = document.getElementById('particles');
-    const canvas = document.createElement('canvas');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    particles.appendChild(canvas);
-    const ctx = canvas.getContext('2d');
-    const particleCount = 60;
-    const particleArray = [];
-    class Particle {
-      constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 3 + 1;
-        this.speedX = (Math.random() - 0.5) * 0.3;
-        this.speedY = (Math.random() - 0.5) * 0.3;
-        this.alpha = Math.random() * 0.6 + 0.2;
-      }
-      update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-        if (this.x < 0) this.x = canvas.width;
-        else if (this.x > canvas.width) this.x = 0;
-        if (this.y < 0) this.y = canvas.height;
-        else if (this.y > canvas.height) this.y = 0;
-      }
-      draw() {
-        ctx.fillStyle = `rgba(243, 194, 139, ${this.alpha})`;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-    for (let i = 0; i < particleCount; i++) {
-      particleArray.push(new Particle());
-    }
-    function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particleArray.forEach(p => {
-        p.update();
-        p.draw();
-      });
-      requestAnimationFrame(animate);
-    }
-    animate();
-    window.addEventListener('resize', () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    });
+  function openDoor() {
+    doorContainer.classList.add('open');
+    playCelebrationSound();
+
+    setTimeout(() => {
+      doorContainer.style.display = 'none';
+      celebrate.style.display = 'flex';
+      launchConfetti();
+    }, 2200);
   }
-})();
+
+  doors.addEventListener('click', openDoor);
+  doors.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      openDoor();
+      e.preventDefault();
+    }
+  });
 </script>
+
 </body>
 </html>
