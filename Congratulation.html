@@ -11,7 +11,6 @@
     --gold-primary: #f3c28b;
     --gold-secondary: #d9a84b;
     --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
-    --shadow-glow: 0 0 15px #d9a84b, 0 0 30px #f3c28b;
   }
 
   * {
@@ -28,6 +27,19 @@
     user-select: none;
   }
 
+  #welcomeMessage {
+    position: fixed;
+    top: 1.5rem;
+    width: 100%;
+    text-align: center;
+    font-weight: 300;
+    font-size: clamp(1rem, 1.5vw, 1.5rem);
+    color: var(--gold-secondary);
+    text-shadow: 0 0 8px rgba(217, 168, 75, 0.6);
+    user-select: none;
+    z-index: 20;
+  }
+
   #doorContainer {
     position: fixed;
     inset: 0;
@@ -39,6 +51,14 @@
     z-index: 10;
     opacity: 1;
     transition: opacity 1s ease;
+    flex-direction: column;
+  }
+
+  .door-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
   }
 
   .door {
@@ -108,10 +128,7 @@
   }
 
   #startBtn {
-    position: absolute;
-    bottom: 5vh;
-    left: 50%;
-    transform: translateX(-50%);
+    margin-bottom: 3rem;
     padding: 1.2em 3em;
     font-size: clamp(1.2rem, 2vw, 1.8rem);
     background: linear-gradient(45deg, var(--gold-primary), var(--gold-secondary));
@@ -188,14 +205,20 @@
 </head>
 <body>
 
-<div id="doorContainer">
-  <div class="door left"></div>
-  <div class="door right"></div>
-  <div id="doorLogo">
+<div id="welcomeMessage" aria-live="polite">
+  Please join us as we celebrate today’s success at 4Site!
+</div>
+
+<div id="doorContainer" role="main">
+  <div class="door-wrapper">
+    <div class="door left"></div>
+    <div class="door right"></div>
+  </div>
+  <div id="doorLogo" aria-label="4Site logo and tagline">
     <h1>4Site</h1>
     <p>Exceptional Cabinetry</p>
   </div>
-  <button id="startBtn" aria-label="Start Celebration">点击开始</button>
+  <button id="startBtn" aria-label="Start Celebration">Click to Start</button>
 </div>
 
 <div id="celebrate" role="region" aria-live="polite" aria-atomic="true">
@@ -215,7 +238,7 @@
   startBtn.addEventListener('click', async () => {
     startBtn.disabled = true;
     await initAudio();
-    await runAnimation();
+    runAnimation();
   });
 
   async function initAudio() {
@@ -225,32 +248,32 @@
       audioContext = new (window.AudioContext || window.webkitAudioContext)();
       audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
     } catch (e) {
-      console.warn("Audio failed to load, continuing without sound.", e);
+      console.warn("Audio failed to load", e);
     }
   }
 
-  async function runAnimation() {
+  function runAnimation() {
     doorContainer.classList.add('open');
-    await delay(2200);
-
-    doorContainer.style.transition = 'opacity 1s ease';
-    doorContainer.style.opacity = '0';
-    celebrate.classList.add('active');
-    await delay(1000);
-    doorContainer.style.display = 'none';
     playAudio();
-    launchConfetti();
+
+    setTimeout(() => {
+      doorContainer.style.transition = 'opacity 1s ease';
+      doorContainer.style.opacity = '0';
+      celebrate.classList.add('active');
+      setTimeout(() => {
+        doorContainer.style.display = 'none';
+      }, 1000);
+      launchConfetti();
+    }, 2200);
   }
 
   function playAudio() {
     if (!audioBuffer || !audioContext) return;
     const source = audioContext.createBufferSource();
     source.buffer = audioBuffer;
-
     const gainNode = audioContext.createGain();
     gainNode.gain.setValueAtTime(0, audioContext.currentTime);
     gainNode.gain.linearRampToValueAtTime(0.8, audioContext.currentTime + 0.5);
-
     source.connect(gainNode);
     gainNode.connect(audioContext.destination);
     source.start(0);
@@ -268,7 +291,6 @@
       colors: ['#f3c28b', '#d9a84b', '#ffffff'],
       shapes: ['square', 'circle'],
     };
-
     function frame() {
       confetti({
         ...defaults,
@@ -281,16 +303,11 @@
         origin: { x: Math.random(), y: Math.random() - 0.2 },
         shapes: ['circle'],
       });
-
       if (Date.now() < animationEnd) {
         requestAnimationFrame(frame);
       }
     }
     frame();
-  }
-
-  function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
   }
 })();
 </script>
