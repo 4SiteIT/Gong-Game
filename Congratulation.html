@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>4Site Premium Experience</title>
+<title>4Site Auto-Experience</title>
 <style>
-  /* Your existing CSS styles */
+  /* Your existing CSS styles remain unchanged */
 </style>
 </head>
 <body>
@@ -14,97 +14,93 @@
 <audio id="gongAudio"></audio>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const audio = document.getElementById('gongAudio');
+// First: Create and initialize the audio context immediately
+let audioContext;
+try {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+} catch(e) {
+    console.log("Web Audio API not supported");
+}
+
+// Second: Preload the audio file asynchronously
+let audioBuffer;
+fetch('Gong.mp3')
+    .then(response => response.arrayBuffer())
+    .then(arrayBuffer => {
+        if(audioContext) {
+            return audioContext.decodeAudioData(arrayBuffer);
+        }
+        return null;
+    })
+    .then(buffer => {
+        audioBuffer = buffer;
+        console.log("Audio preloaded successfully");
+    })
+    .catch(e => console.error("Audio preload failed:", e));
+
+// Third: Start the experience with automatic audio
+function startExperience() {
+    // Your existing animation code
+    doorContainer.classList.add('open');
     
-    // Method 1: Standard Audio with Hidden Interaction
-    function attemptStandardPlay() {
-        audio.src = 'Gong.mp3';
-        audio.volume = 0.8;
-        
-        // Create invisible interactable element
-        const interactor = document.createElement('div');
-        interactor.style.position = 'fixed';
-        interactor.style.top = '0';
-        interactor.style.left = '0';
-        interactor.style.width = '100%';
-        interactor.style.height = '100%';
-        interactor.style.zIndex = '99999';
-        interactor.style.opacity = '0';
-        document.body.appendChild(interactor);
-        
-        // Programmatically click it immediately
-        setTimeout(() => {
-            interactor.click();
-            
-            // Try playing after interaction
-            const playPromise = audio.play();
-            
-            playPromise.catch(e => {
-                console.log('Standard play failed, trying method 2');
-                attemptWebAudio();
-            }).then(() => {
-                if (interactor.parentNode) {
-                    interactor.remove();
-                }
-            });
-        }, 50);
-    }
-    
-    // Method 2: Web Audio API Fallback
-    function attemptWebAudio() {
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const gainNode = audioContext.createGain();
-        gainNode.gain.value = 0.8;
-        
-        fetch('Gong.mp3')
-            .then(response => response.arrayBuffer())
-            .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
-            .then(audioBuffer => {
-                const source = audioContext.createBufferSource();
-                source.buffer = audioBuffer;
-                source.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                // Try resuming context (required for some browsers)
-                audioContext.resume().then(() => {
-                    source.start(0);
-                    console.log('Web Audio playback successful');
-                });
-            })
-            .catch(e => {
-                console.error('Web Audio failed, trying method 3', e);
-                attemptVideoTrick();
-            });
-    }
-    
-    // Method 3: Video Element Hack
-    function attemptVideoTrick() {
-        const video = document.createElement('video');
-        video.style.display = 'none';
-        video.muted = true;
-        video.src = 'Gong.mp3';
-        video.play();
-        
-        setTimeout(() => {
-            video.muted = false;
-            video.volume = 0.8;
-            video.play().catch(e => console.error('Video hack failed', e));
-        }, 1000);
-    }
-    
-    // Start with primary method
     setTimeout(() => {
-        attemptStandardPlay();
+        // Try to play audio through Web Audio API first
+        if(audioBuffer && audioContext) {
+            const source = audioContext.createBufferSource();
+            source.buffer = audioBuffer;
+            source.connect(audioContext.destination);
+            
+            // Some browsers require this resume() call
+            audioContext.resume().then(() => {
+                source.start(0);
+                console.log("Web Audio playback started");
+            });
+        } 
+        // Fallback to HTML5 Audio if Web Audio fails
+        else {
+            const audio = document.getElementById('gongAudio');
+            audio.src = 'Gong.mp3';
+            audio.volume = 0.8;
+            
+            // Create a silent video element to trick browsers
+            const video = document.createElement('video');
+            video.muted = true;
+            video.src = 'Gong.mp3';
+            video.play().then(() => {
+                // Now try playing the actual audio
+                setTimeout(() => {
+                    audio.play().catch(e => {
+                        console.log("Final fallback failed, user interaction required");
+                    });
+                }, 300);
+            });
+        }
         
-        // Begin animations regardless of audio
-        startVisualExperience();
+        // Continue with your animations
+        setTimeout(() => {
+            doorContainer.style.display = 'none';
+            celebrate.style.display = 'flex';
+            launchConfetti();
+        }, 1800);
     }, 1000);
+}
+
+// Fourth: Start everything after a small delay
+setTimeout(() => {
+    // This invisible interaction helps some browsers
+    const invisibleButton = document.createElement('button');
+    invisibleButton.style.position = 'fixed';
+    invisibleButton.style.opacity = '0';
+    invisibleButton.style.pointerEvents = 'none';
+    document.body.appendChild(invisibleButton);
+    invisibleButton.click();
     
-    function startVisualExperience() {
-        // Your existing animation code
-    }
-});
+    // Begin the experience
+    startExperience();
+    
+    // Clean up
+    setTimeout(() => invisibleButton.remove(), 2000);
+}, 500);
 </script>
 </body>
 </html>
