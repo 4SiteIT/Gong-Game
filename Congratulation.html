@@ -13,125 +13,29 @@
     --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  * {
-    box-sizing: border-box;
-  }
-
-  html, body {
-    margin: 0; padding: 0;
-    height: 100%;
-    background: linear-gradient(135deg, #0a0a0a 0%, #1f1f1f 100%);
-    font-family: 'Poppins', sans-serif;
-    color: var(--gold-primary);
-    overflow: hidden;
-    user-select: none;
-  }
-
-  #doorContainer {
+  #welcomeMessage {
     position: fixed;
-    inset: 0;
-    perspective: 1800px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: radial-gradient(ellipse at center, #111 0%, #000 100%);
-    z-index: 10;
-    opacity: 1;
-    transition: opacity 1s ease;
-    overflow: hidden;
-  }
-
-  .door {
-    position: fixed;
-    top: 0; 
-    height: 100vh;
-    width: 50vw;
-    background-image: url('Door.jpg');
-    background-size: 200% 100%;
-    background-repeat: no-repeat;
-    transition: transform 2.2s var(--ease-out-quint);
-    box-shadow: inset 0 0 60px rgba(0,0,0,0.8);
-    border-radius: 0;
-    z-index: 15;
-  }
-
-  .door.left {
-    left: 0;
-    background-position: left center;
-    transform-origin: left center;
-  }
-
-  .door.right {
-    right: 0;
-    background-position: right center;
-    transform-origin: right center;
-  }
-
-  #doorContainer.open .door.left {
-    transform: rotateY(-115deg) translateZ(-60px);
-  }
-
-  #doorContainer.open .door.right {
-    transform: rotateY(115deg) translateZ(-60px);
-  }
-
-  #doorLogo {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: 1rem;
+    width: 100%;
     text-align: center;
+    font-weight: 500;
+    font-size: clamp(1rem, 2vw, 1.3rem);
+    color: var(--gold-secondary);
+    text-shadow: 0 0 12px rgba(217, 168, 75, 0.8);
     user-select: none;
     z-index: 20;
+    letter-spacing: 0.05em;
+    opacity: 0;
+    animation: fadeInOut 4s ease-in-out infinite;
   }
 
-  #doorLogo h1 {
-    font-weight: 900;
-    font-size: clamp(5rem, 10vw, 9rem);
-    letter-spacing: 0.5em;
-    color: var(--gold-primary);
-    text-shadow:
-      0 0 15px #f3c28b,
-      0 0 40px #d9a84b,
-      0 0 70px #d9a84b,
-      0 0 100px #f3c28b;
-    margin: 0;
-    text-transform: uppercase;
+  @keyframes fadeInOut {
+    0% {opacity: 0; transform: translateY(10px);}
+    20% {opacity: 1; transform: translateY(0);}
+    80% {opacity: 1; transform: translateY(0);}
+    100% {opacity: 0; transform: translateY(-10px);}
   }
 
-  #doorLogo p {
-    margin-top: 1.5rem;
-    font-weight: 400;
-    font-size: clamp(1.5rem, 2.5vw, 2.5rem);
-    color: var(--gold-secondary);
-    letter-spacing: 0.25em;
-    text-shadow: 0 0 15px #d9a84b;
-  }
-
-  #startBtn {
-    position: fixed;
-    bottom: 5vh;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: clamp(1rem, 2vw, 1.3rem);
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    font-weight: 700;
-    color: var(--gold-primary);
-    text-shadow:
-      0 0 6px #f3c28b;
-    user-select: none;
-    z-index: 30;
-    transition: color 0.3s ease, text-shadow 0.3s ease;
-  }
-  #startBtn:hover {
-    color: var(--gold-secondary);
-    text-shadow:
-      0 0 14px #d9a84b,
-      0 0 20px #d9a84b;
-  }
 
   #celebrate {
     position: fixed;
@@ -147,6 +51,10 @@
     pointer-events: none;
     transition: opacity 1s ease;
     user-select: none;
+    padding: 0 2rem;
+    text-align: center;
+    line-height: 1.3;
+    overflow: hidden;
   }
 
   #celebrate.active {
@@ -154,9 +62,18 @@
     pointer-events: all;
   }
 
+  #particles {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 4;
+  }
+
   #celebrate h1 {
     font-size: clamp(4rem, 7vw, 6rem);
-    margin: 0;
+    margin: 0 0 1.2rem 0;
     font-weight: 900;
     letter-spacing: 0.25em;
     background: linear-gradient(to right, var(--gold-primary), var(--gold-secondary));
@@ -164,10 +81,11 @@
     background-clip: text;
     color: transparent;
     filter: drop-shadow(0 0 30px var(--gold-secondary));
-    animation: glowPulse 3s ease-in-out infinite alternate;
+    animation: glowPulse 3s ease-in-out infinite alternate, bounceScale 3s ease-in-out infinite;
     opacity: 1;
     transition: opacity 1.5s ease;
   }
+
   #celebrate h1.fade-out {
     opacity: 0;
   }
@@ -177,11 +95,19 @@
     100% { filter: drop-shadow(0 0 50px var(--gold-primary)); }
   }
 
+  @keyframes bounceScale {
+    0%, 100% { transform: scale(1);}
+    50% { transform: scale(1.05);}
+  }
+
   #celebrate p {
-    margin-top: 2rem;
+    margin: 0;
     font-weight: 400;
     font-size: clamp(1.5rem, 2.5vw, 2rem);
     letter-spacing: 0.15em;
+    max-width: 600px;
+    text-shadow:
+      0 0 10px var(--gold-secondary);
   }
 
   canvas.confetti {
@@ -196,6 +122,10 @@
 </head>
 <body>
 
+<div id="welcomeMessage" aria-live="polite">
+  Push the door and explore 4Site together
+</div>
+
 <div id="doorContainer" role="main" aria-label="Opening door animation">
   <div class="door left"></div>
   <div class="door right"></div>
@@ -205,12 +135,13 @@
     <p>Exceptional Cabinetry</p>
   </div>
 
-  <button id="startBtn" aria-label="Push the door and explore 4Site together">
+  <button id="startBtn" aria-label="Push the door and explore 4Site together" style="display:none;">
     Push the door and explore 4Site together
   </button>
 </div>
 
 <div id="celebrate" role="region" aria-live="polite" aria-atomic="true">
+  <div id="particles"></div>
   <h1 id="celebrateTitle">Project Successfully Awarded</h1>
   <p>Celebrating our achievement</p>
   <canvas class="confetti"></canvas>
@@ -222,14 +153,22 @@
   const doorContainer = document.getElementById('doorContainer');
   const celebrate = document.getElementById('celebrate');
   const celebrateTitle = document.getElementById('celebrateTitle');
+  const welcomeMessage = document.getElementById('welcomeMessage');
   const startBtn = document.getElementById('startBtn');
-  let audioContext, audioBuffer;
 
-  startBtn.addEventListener('click', async () => {
-    startBtn.disabled = true;
+  welcomeMessage.style.cursor = 'pointer';
+  welcomeMessage.addEventListener('click', startExperience);
+  doorContainer.addEventListener('click', startExperience);
+
+  let audioContext, audioBuffer;
+  let animationStarted = false;
+
+  async function startExperience() {
+    if(animationStarted) return;
+    animationStarted = true;
     await initAudio();
     runAnimation();
-  });
+  }
 
   async function initAudio() {
     try {
@@ -243,6 +182,8 @@
   }
 
   function runAnimation() {
+    welcomeMessage.style.animationPlayState = 'paused';
+    welcomeMessage.style.opacity = '0';
     doorContainer.classList.add('open');
     playAudio();
 
@@ -260,6 +201,7 @@
       }, 1000);
 
       launchConfetti();
+      startParticles();
     }, 2200);
   }
 
@@ -304,6 +246,63 @@
       }
     }
     frame();
+  }
+
+  function startParticles() {
+    const particles = document.getElementById('particles');
+    const canvas = document.createElement('canvas');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    particles.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+
+    const particleCount = 60;
+    const particleArray = [];
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 3 + 1;
+        this.speedX = (Math.random() - 0.5) * 0.3;
+        this.speedY = (Math.random() - 0.5) * 0.3;
+        this.alpha = Math.random() * 0.6 + 0.2;
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.x < 0) this.x = canvas.width;
+        else if (this.x > canvas.width) this.x = 0;
+        if (this.y < 0) this.y = canvas.height;
+        else if (this.y > canvas.height) this.y = 0;
+      }
+      draw() {
+        ctx.fillStyle = `rgba(243, 194, 139, ${this.alpha})`;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < particleCount; i++) {
+      particleArray.push(new Particle());
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particleArray.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
   }
 })();
 </script>
