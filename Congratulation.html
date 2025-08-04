@@ -13,20 +13,109 @@
     --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
   }
 
+  * {
+    box-sizing: border-box;
+  }
+  body, html {
+    margin: 0; padding: 0;
+    height: 100%;
+    width: 100%;
+    background: #000;
+    font-family: 'Poppins', sans-serif;
+    overflow: hidden;
+    color: var(--gold-primary);
+  }
+
+  #doorContainer {
+    position: fixed;
+    inset: 0;
+    perspective: 1800px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(ellipse at center, #1a1a1a 0%, #000 100%);
+    z-index: 10000;
+    overflow: visible;
+  }
+
+  .door {
+    width: 50vw;
+    height: 100vh;
+    background-image: url('Door.jpg');
+    background-size: 200% 100%;
+    background-repeat: no-repeat;
+    transition: transform 2.2s var(--ease-out-quint);
+    filter: drop-shadow(0 0 30px rgba(0,0,0,0.7));
+    will-change: transform;
+  }
+
+  .door.left {
+    background-position: left center;
+    transform-origin: left center;
+    box-shadow: inset -25px 0 40px rgba(0,0,0,0.9);
+  }
+
+  .door.right {
+    background-position: right center;
+    transform-origin: right center;
+    box-shadow: inset 25px 0 40px rgba(0,0,0,0.9);
+  }
+
+  #doorContainer.open .door.left {
+    transform: rotateY(-105deg) translateZ(-50px);
+  }
+
+  #doorContainer.open .door.right {
+    transform: rotateY(105deg) translateZ(-50px);
+  }
+
+  #doorLogo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--gold-primary);
+    text-align: center;
+    z-index: 10;
+    opacity: 1;
+  }
+
+  #doorLogo h1 {
+    font-size: 10vw;
+    margin: 0;
+    letter-spacing: 0.3em;
+    text-shadow: 0 0 30px rgba(243,194,139,0.4);
+    font-weight: 900;
+    text-transform: uppercase;
+    user-select: none;
+  }
+
+  #doorLogo p {
+    font-size: 2vw;
+    margin: 1.5em 0 0;
+    letter-spacing: 0.25em;
+    font-weight: 300;
+    color: var(--gold-secondary);
+    user-select: none;
+  }
+
   #welcomeMessage {
     position: fixed;
-    top: 1rem;
-    width: 100%;
-    text-align: center;
-    font-weight: 500;
-    font-size: clamp(1rem, 2vw, 1.3rem);
+    top: calc(100vh - 6rem);
+    left: 50%;
+    transform: translateX(-50%);
+    font-weight: 600;
+    font-size: clamp(1rem, 2vw, 1.5rem);
     color: var(--gold-secondary);
     text-shadow: 0 0 12px rgba(217, 168, 75, 0.8);
     user-select: none;
-    z-index: 20;
+    z-index: 10100;
     letter-spacing: 0.05em;
     opacity: 0;
     animation: fadeInOut 4s ease-in-out infinite;
+    cursor: pointer;
+    max-width: 90vw;
+    text-align: center;
   }
 
   @keyframes fadeInOut {
@@ -35,7 +124,6 @@
     80% {opacity: 1; transform: translateY(0);}
     100% {opacity: 0; transform: translateY(-10px);}
   }
-
 
   #celebrate {
     position: fixed;
@@ -82,12 +170,6 @@
     color: transparent;
     filter: drop-shadow(0 0 30px var(--gold-secondary));
     animation: glowPulse 3s ease-in-out infinite alternate, bounceScale 3s ease-in-out infinite;
-    opacity: 1;
-    transition: opacity 1.5s ease;
-  }
-
-  #celebrate h1.fade-out {
-    opacity: 0;
   }
 
   @keyframes glowPulse {
@@ -121,40 +203,29 @@
 </style>
 </head>
 <body>
-
-<div id="welcomeMessage" aria-live="polite">
-  Push the door and explore 4Site together
-</div>
-
 <div id="doorContainer" role="main" aria-label="Opening door animation">
   <div class="door left"></div>
   <div class="door right"></div>
-
   <div id="doorLogo" aria-label="4Site logo and tagline">
     <h1>4Site</h1>
     <p>Exceptional Cabinetry</p>
   </div>
-
-  <button id="startBtn" aria-label="Push the door and explore 4Site together" style="display:none;">
+  <div id="welcomeMessage" tabindex="0" role="button" aria-pressed="false" aria-label="Push the door and explore 4Site together">
     Push the door and explore 4Site together
-  </button>
+  </div>
 </div>
-
 <div id="celebrate" role="region" aria-live="polite" aria-atomic="true">
   <div id="particles"></div>
   <h1 id="celebrateTitle">Project Successfully Awarded</h1>
   <p>Celebrating our achievement</p>
   <canvas class="confetti"></canvas>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 <script>
 (() => {
   const doorContainer = document.getElementById('doorContainer');
   const celebrate = document.getElementById('celebrate');
-  const celebrateTitle = document.getElementById('celebrateTitle');
   const welcomeMessage = document.getElementById('welcomeMessage');
-  const startBtn = document.getElementById('startBtn');
 
   welcomeMessage.style.cursor = 'pointer';
   welcomeMessage.addEventListener('click', startExperience);
@@ -176,9 +247,7 @@
       const arrayBuffer = await response.arrayBuffer();
       audioContext = new (window.AudioContext || window.webkitAudioContext)();
       audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-    } catch (e) {
-      console.warn("Audio failed to load", e);
-    }
+    } catch (e) {}
   }
 
   function runAnimation() {
@@ -191,15 +260,6 @@
       doorContainer.style.transition = 'opacity 1s ease';
       doorContainer.style.opacity = '0';
       celebrate.classList.add('active');
-
-      setTimeout(() => {
-        celebrateTitle.classList.add('fade-out');
-      }, 1500);
-
-      setTimeout(() => {
-        doorContainer.style.display = 'none';
-      }, 1000);
-
       launchConfetti();
       startParticles();
     }, 2200);
@@ -255,10 +315,8 @@
     canvas.height = window.innerHeight;
     particles.appendChild(canvas);
     const ctx = canvas.getContext('2d');
-
     const particleCount = 60;
     const particleArray = [];
-
     class Particle {
       constructor() {
         this.x = Math.random() * canvas.width;
@@ -283,11 +341,9 @@
         ctx.fill();
       }
     }
-
     for (let i = 0; i < particleCount; i++) {
       particleArray.push(new Particle());
     }
-
     function animate() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       particleArray.forEach(p => {
@@ -296,9 +352,7 @@
       });
       requestAnimationFrame(animate);
     }
-
     animate();
-
     window.addEventListener('resize', () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -306,6 +360,5 @@
   }
 })();
 </script>
-
 </body>
 </html>
