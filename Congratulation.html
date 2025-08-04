@@ -1,67 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>4Site | Project Celebration</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;700;900&display=swap');
+
   :root {
     --gold-primary: #f3c28b;
     --gold-secondary: #d9a84b;
     --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+    --shadow-glow: 0 0 15px #d9a84b, 0 0 30px #f3c28b;
   }
-  
-  body {
-    margin: 0;
-    padding: 0;
-    height: 100vh;
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body, html {
+    margin: 0; padding: 0;
+    height: 100%;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1f1f1f 100%);
+    font-family: 'Poppins', sans-serif;
+    color: var(--gold-primary);
     overflow: hidden;
-    background: #000;
-    font-family: 'Montserrat', sans-serif;
+    user-select: none;
   }
 
   #doorContainer {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     perspective: 1800px;
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 10000;
-    background: radial-gradient(ellipse at center, #1a1a1a 0%, #000 100%);
+    background: radial-gradient(ellipse at center, #111 0%, #000 100%);
+    z-index: 10;
+    opacity: 1;
+    transition: opacity 1s ease;
   }
 
   .door {
-    width: 50vw;
-    height: 100vh;
+    width: 48vw;
+    height: 90vh;
+    max-width: 500px;
+    max-height: 900px;
     background-image: url('Door.jpg');
     background-size: 200% 100%;
     background-repeat: no-repeat;
+    filter: drop-shadow(0 0 30px rgba(0,0,0,0.8));
     transition: transform 2.2s var(--ease-out-quint);
-    filter: drop-shadow(0 0 30px rgba(0,0,0,0.7));
+    box-shadow: inset 0 0 80px rgba(255 223 120 / 0.7);
+    border-radius: 20px;
   }
 
   .door.left {
     background-position: left center;
     transform-origin: left center;
-    box-shadow: inset -25px 0 40px rgba(0,0,0,0.9);
+    box-shadow: inset -35px 0 50px rgba(255 215 0 / 0.9);
   }
 
   .door.right {
     background-position: right center;
     transform-origin: right center;
-    box-shadow: inset 25px 0 40px rgba(0,0,0,0.9);
+    box-shadow: inset 35px 0 50px rgba(255 215 0 / 0.9);
   }
 
   #doorContainer.open .door.left {
-    transform: rotateY(-105deg) translateZ(-50px);
+    transform: rotateY(-110deg) translateZ(-60px);
   }
 
   #doorContainer.open .door.right {
-    transform: rotateY(105deg) translateZ(-50px);
+    transform: rotateY(110deg) translateZ(-60px);
   }
 
   #doorLogo {
@@ -69,80 +80,109 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: var(--gold-primary);
     text-align: center;
-    z-index: 10;
-    opacity: 0;
-    animation: fadeIn 1.5s var(--ease-out-quint) 0.5s forwards;
-  }
-
-  @keyframes fadeIn {
-    to { opacity: 1; }
+    user-select: none;
   }
 
   #doorLogo h1 {
-    font-size: 7vw;
-    margin: 0;
-    letter-spacing: 0.3em;
-    text-shadow: 0 0 30px rgba(243,194,139,0.4);
     font-weight: 900;
+    font-size: clamp(3.5rem, 7vw, 8rem);
+    letter-spacing: 0.4em;
+    color: var(--gold-primary);
+    text-shadow:
+      0 0 12px #f3c28b,
+      0 0 30px #d9a84b,
+      0 0 60px #d9a84b,
+      0 0 90px #f3c28b;
+    margin: 0;
     text-transform: uppercase;
   }
 
   #doorLogo p {
-    font-size: 1.8vw;
-    margin: 1.5em 0 0;
-    letter-spacing: 0.25em;
+    margin-top: 1rem;
     font-weight: 300;
+    font-size: clamp(1rem, 1.8vw, 2rem);
     color: var(--gold-secondary);
+    letter-spacing: 0.3em;
+    text-shadow: 0 0 10px #d9a84b;
+  }
+
+  #startBtn {
+    position: absolute;
+    bottom: 5vh;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 1.2em 3em;
+    font-size: clamp(1.2rem, 2vw, 1.8rem);
+    background: linear-gradient(45deg, var(--gold-primary), var(--gold-secondary));
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 700;
+    color: #111;
+    box-shadow:
+      0 0 15px var(--gold-primary),
+      0 0 30px var(--gold-secondary);
+    transition: filter 0.3s ease;
+    user-select: none;
+  }
+  #startBtn:hover {
+    filter: brightness(1.2);
   }
 
   #celebrate {
-    display: none;
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
+    display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
-    z-index: 9000;
+    color: var(--gold-primary);
+    z-index: 5;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1s ease;
+    user-select: none;
+  }
+
+  #celebrate.active {
+    opacity: 1;
+    pointer-events: all;
   }
 
   #celebrate h1 {
-    font-size: 5vw;
+    font-size: clamp(3rem, 5vw, 5rem);
     margin: 0;
+    font-weight: 900;
+    letter-spacing: 0.2em;
     background: linear-gradient(to right, var(--gold-primary), var(--gold-secondary));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    text-shadow: 0 0 40px rgba(217,168,75,0.3);
-    animation: textGlow 3s infinite alternate;
+    filter: drop-shadow(0 0 25px var(--gold-secondary));
+    animation: glowPulse 3s ease-in-out infinite alternate;
   }
 
-  @keyframes textGlow {
-    from { text-shadow: 0 0 15px rgba(217,168,75,0.3); }
-    to { text-shadow: 0 0 40px rgba(217,168,75,0.7); }
+  @keyframes glowPulse {
+    0% { filter: drop-shadow(0 0 15px var(--gold-secondary)); }
+    100% { filter: drop-shadow(0 0 40px var(--gold-primary)); }
   }
 
   #celebrate p {
-    font-size: 1.5vw;
-    margin-top: 3em;
-    color: var(--gold-primary);
-    letter-spacing: 0.15em;
+    margin-top: 1.5rem;
     font-weight: 300;
+    font-size: clamp(1rem, 1.8vw, 1.8rem);
+    letter-spacing: 0.15em;
   }
 
   canvas.confetti {
     position: fixed;
     pointer-events: none;
-    top: 0;
-    left: 0;
+    top: 0; left: 0;
     width: 100%;
     height: 100%;
-    z-index: 8000;
+    z-index: 9999;
   }
 </style>
 </head>
@@ -155,9 +195,10 @@
     <h1>4Site</h1>
     <p>Exceptional Cabinetry</p>
   </div>
+  <button id="startBtn" aria-label="Start Celebration">点击开始</button>
 </div>
 
-<div id="celebrate">
+<div id="celebrate" role="region" aria-live="polite" aria-atomic="true">
   <h1>Project Successfully Awarded</h1>
   <p>Celebrating our achievement</p>
   <canvas class="confetti"></canvas>
@@ -165,106 +206,94 @@
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 <script>
-// Audio context for guaranteed playback
-let audioContext;
-let audioBuffer;
+(() => {
+  const doorContainer = document.getElementById('doorContainer');
+  const celebrate = document.getElementById('celebrate');
+  const startBtn = document.getElementById('startBtn');
+  let audioContext, audioBuffer;
 
-// Preload audio file
-fetch('Gong.mp3')
-  .then(response => response.arrayBuffer())
-  .then(arrayBuffer => {
-    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    return audioContext.decodeAudioData(arrayBuffer);
-  })
-  .then(buffer => {
-    audioBuffer = buffer;
-    startExperience();
-  })
-  .catch(error => {
-    console.error("Audio loading failed:", error);
-    startExperience(); // Start without audio
+  startBtn.addEventListener('click', async () => {
+    startBtn.disabled = true;
+    await initAudio();
+    await runAnimation();
   });
 
-function startExperience() {
-  // Begin door animation
-  setTimeout(() => {
-    document.getElementById('doorContainer').classList.add('open');
-    
-    setTimeout(() => {
-      // Transition to celebration
-      document.getElementById('doorContainer').style.display = 'none';
-      document.getElementById('celebrate').style.display = 'flex';
-      
-      // Play audio
-      playCelebrationSound();
-      
-      // Launch confetti
-      launchConfetti();
-    }, 2200);
-  }, 500);
-}
-
-function playCelebrationSound() {
-  if (!audioBuffer || !audioContext) return;
-
-  const source = audioContext.createBufferSource();
-  source.buffer = audioBuffer;
-  
-  // Create gain node for smooth volume fade-in
-  const gainNode = audioContext.createGain();
-  gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-  gainNode.gain.linearRampToValueAtTime(0.8, audioContext.currentTime + 0.5);
-  
-  source.connect(gainNode);
-  gainNode.connect(audioContext.destination);
-  
-  // Start playback
-  source.start(0);
-  
-  // Some browsers require this resume() call
-  audioContext.resume().then(() => {
-    console.log("Audio playback started successfully");
-  });
-}
-
-function launchConfetti() {
-  const duration = 8 * 1000;
-  const animationEnd = Date.now() + duration;
-  const defaults = { 
-    startVelocity: 25, 
-    spread: 360, 
-    ticks: 100, 
-    zIndex: 8000,
-    colors: ['#f3c28b', '#d9a84b', '#ffffff']
-  };
-
-  function frame() {
-    confetti({
-      ...defaults,
-      particleCount: 10,
-      origin: { 
-        x: Math.random(),
-        y: Math.random() - 0.2
-      }
-    });
-    
-    confetti({
-      ...defaults,
-      particleCount: 5,
-      origin: { 
-        x: Math.random(),
-        y: Math.random() - 0.2
-      },
-      shapes: ['circle', 'square']
-    });
-
-    if (Date.now() < animationEnd) {
-      requestAnimationFrame(frame);
+  async function initAudio() {
+    try {
+      const response = await fetch('Gong.mp3');
+      const arrayBuffer = await response.arrayBuffer();
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+    } catch (e) {
+      console.warn("Audio failed to load, continuing without sound.", e);
     }
   }
-  
-  frame();
-}
+
+  async function runAnimation() {
+    doorContainer.classList.add('open');
+    await delay(2200);
+
+    doorContainer.style.transition = 'opacity 1s ease';
+    doorContainer.style.opacity = '0';
+    celebrate.classList.add('active');
+    await delay(1000);
+    doorContainer.style.display = 'none';
+    playAudio();
+    launchConfetti();
+  }
+
+  function playAudio() {
+    if (!audioBuffer || !audioContext) return;
+    const source = audioContext.createBufferSource();
+    source.buffer = audioBuffer;
+
+    const gainNode = audioContext.createGain();
+    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.8, audioContext.currentTime + 0.5);
+
+    source.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    source.start(0);
+    audioContext.resume();
+  }
+
+  function launchConfetti() {
+    const duration = 8000;
+    const animationEnd = Date.now() + duration;
+    const defaults = {
+      startVelocity: 25,
+      spread: 360,
+      ticks: 80,
+      zIndex: 9999,
+      colors: ['#f3c28b', '#d9a84b', '#ffffff'],
+      shapes: ['square', 'circle'],
+    };
+
+    function frame() {
+      confetti({
+        ...defaults,
+        particleCount: 10,
+        origin: { x: Math.random(), y: Math.random() - 0.2 },
+      });
+      confetti({
+        ...defaults,
+        particleCount: 5,
+        origin: { x: Math.random(), y: Math.random() - 0.2 },
+        shapes: ['circle'],
+      });
+
+      if (Date.now() < animationEnd) {
+        requestAnimationFrame(frame);
+      }
+    }
+    frame();
+  }
+
+  function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+})();
 </script>
+
 </body>
 </html>
