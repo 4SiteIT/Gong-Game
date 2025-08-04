@@ -31,11 +31,19 @@
     inset: 0;
     perspective: 1800px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     background: radial-gradient(ellipse at center, #1a1a1a 0%, #000 100%);
     z-index: 10000;
     overflow: visible;
+    user-select: none;
+  }
+
+  .doorWrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
   }
 
   .door {
@@ -77,7 +85,6 @@
     color: var(--gold-primary);
     text-align: center;
     z-index: 10;
-    opacity: 1;
   }
 
   #doorLogo h1 {
@@ -87,7 +94,6 @@
     text-shadow: 0 0 30px rgba(243,194,139,0.4);
     font-weight: 900;
     text-transform: uppercase;
-    user-select: none;
   }
 
   #doorLogo p {
@@ -96,33 +102,20 @@
     letter-spacing: 0.25em;
     font-weight: 300;
     color: var(--gold-secondary);
-    user-select: none;
   }
 
   #welcomeMessage {
-    position: fixed;
-    top: calc(100vh - 6rem);
-    left: 50%;
-    transform: translateX(-50%);
+    margin-top: 1rem;
     font-weight: 600;
     font-size: clamp(1rem, 2vw, 1.5rem);
     color: var(--gold-secondary);
     text-shadow: 0 0 12px rgba(217, 168, 75, 0.8);
-    user-select: none;
-    z-index: 10100;
-    letter-spacing: 0.05em;
-    opacity: 0;
-    animation: fadeInOut 4s ease-in-out infinite;
     cursor: pointer;
-    max-width: 90vw;
+    user-select: none;
+    letter-spacing: 0.05em;
     text-align: center;
-  }
-
-  @keyframes fadeInOut {
-    0% {opacity: 0; transform: translateY(10px);}
-    20% {opacity: 1; transform: translateY(0);}
-    80% {opacity: 1; transform: translateY(0);}
-    100% {opacity: 0; transform: translateY(-10px);}
+    max-width: 90vw;
+    z-index: 10100;
   }
 
   #celebrate {
@@ -203,23 +196,27 @@
 </style>
 </head>
 <body>
-<div id="doorContainer" role="main" aria-label="Opening door animation">
-  <div class="door left"></div>
-  <div class="door right"></div>
-  <div id="doorLogo" aria-label="4Site logo and tagline">
-    <h1>4Site</h1>
-    <p>Exceptional Cabinetry</p>
+  <div id="doorContainer" role="main" aria-label="Opening door animation">
+    <div class="doorWrapper">
+      <div class="door left"></div>
+      <div class="door right"></div>
+    </div>
+    <div id="doorLogo" aria-label="4Site logo and tagline">
+      <h1>4Site</h1>
+      <p>Exceptional Cabinetry</p>
+    </div>
+    <div id="welcomeMessage" tabindex="0" role="button" aria-pressed="false" aria-label="Push the door and explore 4Site together">
+      Push the door and explore 4Site together
+    </div>
   </div>
-  <div id="welcomeMessage" tabindex="0" role="button" aria-pressed="false" aria-label="Push the door and explore 4Site together">
-    Push the door and explore 4Site together
+
+  <div id="celebrate" role="region" aria-live="polite" aria-atomic="true">
+    <div id="particles"></div>
+    <h1 id="celebrateTitle">Project Successfully Awarded</h1>
+    <p>Celebrating our achievement</p>
+    <canvas class="confetti"></canvas>
   </div>
-</div>
-<div id="celebrate" role="region" aria-live="polite" aria-atomic="true">
-  <div id="particles"></div>
-  <h1 id="celebrateTitle">Project Successfully Awarded</h1>
-  <p>Celebrating our achievement</p>
-  <canvas class="confetti"></canvas>
-</div>
+
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 <script>
 (() => {
@@ -238,7 +235,20 @@
     if(animationStarted) return;
     animationStarted = true;
     await initAudio();
-    runAnimation();
+
+    welcomeMessage.style.transition = 'opacity 0.3s ease';
+    welcomeMessage.style.opacity = '0';
+
+    doorContainer.classList.add('open');
+    playAudio();
+
+    setTimeout(() => {
+      doorContainer.style.transition = 'opacity 0.8s ease';
+      doorContainer.style.opacity = '0';
+      celebrate.classList.add('active');
+      launchConfetti();
+      startParticles();
+    }, 2200);
   }
 
   async function initAudio() {
@@ -248,21 +258,6 @@
       audioContext = new (window.AudioContext || window.webkitAudioContext)();
       audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
     } catch (e) {}
-  }
-
-  function runAnimation() {
-    welcomeMessage.style.animationPlayState = 'paused';
-    welcomeMessage.style.opacity = '0';
-    doorContainer.classList.add('open');
-    playAudio();
-
-    setTimeout(() => {
-      doorContainer.style.transition = 'opacity 1s ease';
-      doorContainer.style.opacity = '0';
-      celebrate.classList.add('active');
-      launchConfetti();
-      startParticles();
-    }, 2200);
   }
 
   function playAudio() {
