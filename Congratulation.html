@@ -11,9 +11,7 @@
     --gold-secondary: #d9a84b;
     --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
   }
-  * {
-    box-sizing: border-box;
-  }
+  * { box-sizing: border-box; }
   body, html {
     margin: 0; padding: 0;
     height: 100%;
@@ -42,6 +40,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer; /* 添加手型光标 */
   }
   .door {
     width: 50vw;
@@ -101,7 +100,6 @@
     font-size: clamp(1rem, 2vw, 1.5rem);
     color: var(--gold-secondary);
     text-shadow: 0 0 12px rgba(217, 168, 75, 0.8);
-    cursor: pointer;
     user-select: none;
     letter-spacing: 0.05em;
     text-align: center;
@@ -170,8 +168,7 @@
     font-size: clamp(1.5rem, 2.5vw, 2rem);
     letter-spacing: 0.15em;
     max-width: 600px;
-    text-shadow:
-      0 0 10px var(--gold-secondary);
+    text-shadow: 0 0 10px var(--gold-secondary);
   }
   canvas.confetti {
     position: fixed;
@@ -193,7 +190,7 @@
       <h1>4Site</h1>
       <p>Exceptional Cabinetry</p>
     </div>
-    <div id="welcomeMessage" tabindex="0" role="button" aria-pressed="false" aria-label="Push the door and explore 4Site together">
+    <div id="welcomeMessage">
       Push the door and explore 4Site together
     </div>
   </div>
@@ -210,24 +207,17 @@
 (() => {
   const doorContainer = document.getElementById('doorContainer');
   const celebrate = document.getElementById('celebrate');
-  const welcomeMessage = document.getElementById('welcomeMessage');
-
-  welcomeMessage.style.cursor = 'pointer';
-  welcomeMessage.addEventListener('click', startExperience);
-  doorContainer.addEventListener('click', e => {
-    if(e.target === doorContainer) startExperience();
-  });
+  const doorWrapper = document.querySelector('.doorWrapper');
 
   let audioContext, audioBuffer;
   let animationStarted = false;
+
+  doorWrapper.addEventListener('click', startExperience);
 
   async function startExperience() {
     if(animationStarted) return;
     animationStarted = true;
     await initAudio();
-
-    welcomeMessage.style.transition = 'opacity 0.3s ease';
-    welcomeMessage.style.opacity = '0';
 
     doorContainer.classList.add('open');
     playAudio();
